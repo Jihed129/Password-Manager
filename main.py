@@ -1,5 +1,6 @@
 import os
 import json
+import hashlib
 
 
 class Pass:
@@ -11,21 +12,20 @@ class Pass:
     def get_password(self):
         return self.__password
     
+    def encrypt(self):
+        randomBytes = os.urandom(16) # 
+        hashed = hashlib.sha256(randomBytes+self.__password.encode()).hexdigest()
+        self.__password = hashed
+        return f"your encrypted password is {hashed}"
 
-    def xor_encrypt_decrypt(self, key="secret"):
-        result = ""
-        for i, char in enumerate(self.__password):
-            # XOR each character with the corresponding key character (cycling)
-            xored = ord(char) ^ ord(key[i % len(key)])
-            result += chr(xored)
-        self.__password = result
-        return result
 
-path = 'your .json file path in here' # <<-- Path Here -->>
+
+
+path = 'YOUR JSON PATH IN HERE' # <<-- Path Here -->>
 
 while True:
     email = input("your email? ")
-    if email.find("@") == -1:
+    if email.find("@") == -1 and email.find("."):
         print("enter a valid email")
         email = input("your email? ")
     else:
@@ -42,7 +42,7 @@ while True:
 def take_choice():
     choice = input('encrypt your password before pasting it to the database? y/n ')
     if choice == "y":
-        encrypted = informations.xor_encrypt_decrypt()
+        encrypted = informations.encrypt()
         print(encrypted)
         print("your password have been encrypted and saved to the data base!")
     elif choice == "n":
@@ -72,4 +72,5 @@ def save_data():
 
 
 save_data()
+
 
