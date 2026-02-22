@@ -7,25 +7,29 @@ class Pass:
     def __init__(self, email, password):
         self.__password = password
         self.email = email
+        self.__randomBytes = None
 
 
     def get_password(self):
         return self.__password
+    def get_salt(self):
+        return self.__randomBytes
     
     def encrypt(self):
         randomBytes = os.urandom(16) # 
         hashed = hashlib.sha256(randomBytes+self.__password.encode()).hexdigest()
         self.__password = hashed
+        self.__randomBytes = randomBytes.hex()
         return f"your encrypted password is {hashed}"
 
 
 
 
-path = 'YOUR JSON PATH IN HERE' # <<-- Path Here -->>
+path = 'C:/Users/jihed/Documents/vs code/python/OOP and DS/pwd_manager.json' # <<-- Path Here -->>
 
 while True:
     email = input("your email? ")
-    if email.find("@") == -1 and email.find("."):
+    if email.find("@") == -1 or email.find(".") == -1:
         print("enter a valid email")
         email = input("your email? ")
     else:
@@ -66,6 +70,8 @@ else:
 # save your informations 
 def save_data():
     newinfos = {'email': email, 'password': informations.get_password()}
+    if informations.get_salt():
+        newinfos['salt'] = informations.get_salt()
     data['manager'].append(newinfos)
     with open(path, 'w') as file:
         json.dump(data, file, indent=2)
